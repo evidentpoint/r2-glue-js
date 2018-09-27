@@ -209,6 +209,14 @@ class DemoMenu {
     _injectGlue() {
         const frame = this.testFrame;
         frame.addEventListener('load', () => {
+            if (window.glueEventMessageRemovers) {
+                // Temporary solution to solve memory leak
+                const removers = window.glueEventMessageRemovers;
+                let remover = function() {};
+                while (remover = removers.pop()) {
+                    remover();
+                }
+            }
             let script = frame.contentDocument.createElement("script");
             script.setAttribute("src", "/dist/ReadiumGlue-payload.js");
             frame.contentDocument.head.appendChild(script);

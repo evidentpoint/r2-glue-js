@@ -8,7 +8,7 @@ export type sendMessage = (type: MessageType, name: string, parameters: any[]) =
 
 export abstract class Receiver {
   protected constructor(namespace: string) {
-    window.addEventListener('message', (event: IMessageEvent) => {
+    const handler = (event: IMessageEvent) => {
       const request = event.data;
 
       if (!Message.validate(request) || request.namespace !== namespace) {
@@ -27,6 +27,14 @@ export abstract class Receiver {
           event.origin,
         );
       });
+    };
+    window.addEventListener('message', handler);
+
+    // This is a temporary solution
+    // Allows demo-menu to clean up these listeners to avoid a memory leak
+    if (!window.glueEventMessageRemovers) window.glueEventMessageRemovers = [];
+    window.glueEventMessageRemovers.push(() => {
+      window.removeEventListener('message', handler);
     });
   }
 
