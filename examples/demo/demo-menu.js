@@ -10,6 +10,7 @@ class DemoMenu {
         this.testFrame.addEventListener('load', () => {
             this.keyGlue = new window.ReadiumGlue.KeyHandling(this.testFrame.contentWindow);
             this.eventGlue = new window.ReadiumGlue.EventHandling(this.testFrame.contentWindow);
+            this.linkGlue = new window.ReadiumGlue.LinkHandling(this.testFrame.contentWindow);
         });
 
         this.testPicker.onchange = () => {
@@ -38,6 +39,7 @@ class DemoMenu {
                 break;
             case 6: // Links
                 this._addPageNavigation();
+                this._addLinkHandling();
                 break;
             case 7: // Layout change
                 this._addPageNavigation();
@@ -169,6 +171,24 @@ class DemoMenu {
                 this.nextPage();
             } else {
                 this.previousPage();
+            }
+        });
+    }
+
+    async _addLinkHandling() {
+        this.linkGlue.addEventListener('body', 'click', ['target'], (opts) => {
+            const href = opts[0].href;
+
+            const arr1 = href.split('#');
+            const hash = arr1[1];
+            const arr2 = arr1[0].split('/');
+            const testPage = arr2[arr2.length-1];
+
+            if (!hash) {
+                // Get the number of the test, and use it to change tests
+                const index = testPage.indexOf('test-');
+                const num = Number.parseInt(testPage.slice(index+5, index+8));
+                this.setTest(num);
             }
         });
     }
