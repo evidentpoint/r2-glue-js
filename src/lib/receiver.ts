@@ -1,4 +1,8 @@
 import { IMessage, Message, MessageType } from './message';
+// TODO: Remove this when we have an appropriate solution for removing these event messages
+declare global {
+  interface Window { glueEventMessageRemovers: any; }
+}
 
 interface IMessageEvent extends MessageEvent {
   readonly data: IMessage;
@@ -32,8 +36,8 @@ export abstract class Receiver {
 
     // This is a temporary solution
     // Allows demo-menu to clean up these listeners to avoid a memory leak
-    if (!window.glueEventMessageRemovers) window.glueEventMessageRemovers = [];
-    window.glueEventMessageRemovers.push(() => {
+    if (window['glueEventMessageRemovers'] === undefined) window['glueEventMessageRemovers'] = [];
+    window['glueEventMessageRemovers'].push(() => {
       window.removeEventListener('message', handler);
     });
   }
