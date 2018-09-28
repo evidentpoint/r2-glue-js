@@ -10,7 +10,7 @@ import {
 interface IRegisteredKeyHandler {
   eventType: KeyEventType;
   callback: MessageCallback;
-  options: IAddKeyListenerOptions;
+  options?: IAddKeyListenerOptions;
 }
 
 const KEYBOARD_EVENT_PROPERTIES = [
@@ -52,12 +52,12 @@ export class KeyHandler extends MessageHandler {
 
       const matchingKeyCodeSet = this.registeredKeyCodes[event.key] || [];
       matchingKeyCodeSet.forEach((listenerID) => {
-        const handlerInfo = this.registeredKeyHandlers[listenerID];
+        const handlerInfo = this.registeredKeyHandlers[listenerID] || {};
         if (handlerInfo.eventType !== event.type) {
           return;
         }
 
-        if (handlerInfo.options.preventDefault) {
+        if (handlerInfo.options && handlerInfo.options.preventDefault) {
           event.preventDefault();
         }
 
@@ -70,7 +70,7 @@ export class KeyHandler extends MessageHandler {
     callback: MessageCallback,
     target: string,
     eventType: KeyEventType,
-    keyCode?: string,
+    keyCode: string,
     options?: IAddKeyListenerOptions,
   ): Promise<number> {
     this.lastUsedID = this.lastUsedID + 1;

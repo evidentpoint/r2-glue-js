@@ -7,7 +7,7 @@ export class EventManager extends AbstractEventManager {
     type: string,
     callback: any,
     options?: any,
-    resolvedTargets?: [],
+    resolvedTargets?: EventTarget[],
   ): number {
     if (!(resolvedTargets && resolvedTargets.length)) resolvedTargets = [window];
 

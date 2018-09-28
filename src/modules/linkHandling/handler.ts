@@ -13,7 +13,9 @@ export class LinkHandler extends EventHandler {
     options: IAddEventListenerOptions,
     ): EventListener {
     return (event) => {
-      const href = event.target && event.target.href;
+      if (!event.target) return;
+      const anchor = <HTMLAnchorElement>event.target;
+      const href = anchor && anchor.href;
       if (!href)  return;
 
       event.preventDefault();
@@ -26,8 +28,8 @@ export class LinkHandler extends EventHandler {
       // callback(marshalEvent(event, properties));
 
       // TODO: Figure out how marshalEvents works, and maybe use that instead
-      const href = { href: event.target && event.target.href };
-      const obj = marshalObject(href);
+      const newHref = { href: anchor.href };
+      const obj = marshalObject(newHref);
       callback(obj);
     };
   }
