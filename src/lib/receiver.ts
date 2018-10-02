@@ -34,12 +34,6 @@ export abstract class Receiver {
     };
     window.addEventListener('message', handler);
 
-    // This is a temporary solution
-    // Allows demo-menu to clean up these listeners to avoid a memory leak
-    if (window['glueEventMessageRemovers'] === undefined) window['glueEventMessageRemovers'] = [];
-    window['glueEventMessageRemovers'].push(() => {
-      window.removeEventListener('message', handler);
-    });
   }
 
   protected abstract processMessage(message: IMessage, sendMessage: sendMessage): void;
