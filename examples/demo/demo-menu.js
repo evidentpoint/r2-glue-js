@@ -8,6 +8,10 @@ class DemoMenu {
         this._updateSrc(this.testPicker.value);
 
         this.testFrame.addEventListener('load', () => {
+            if (this.keyGlue && this.keyGlue.destroy) this.keyGlue.destroy();
+            if (this.eventGlue && this.eventGlue.destroy) this.eventGlue.destroy();
+            if (this.linkGlue && this.linkGlue.destroy) this.linkGlue.destroy();
+
             this.keyGlue = new window.ReadiumGlue.KeyHandling(this.testFrame.contentWindow);
             this.eventGlue = new window.ReadiumGlue.EventHandling(this.testFrame.contentWindow);
             this.linkGlue = new window.ReadiumGlue.LinkHandling(this.testFrame.contentWindow);

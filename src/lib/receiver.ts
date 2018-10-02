@@ -11,8 +11,12 @@ interface IMessageEvent extends MessageEvent {
 export type sendMessage = (type: MessageType, name: string, parameters: any[]) => void;
 
 export abstract class Receiver {
+  private handler: (event: IMessageEvent) => void;
+
   protected constructor(namespace: string) {
-    const handler = (event: IMessageEvent) => {
+    this.destroy = this.destroy.bind(this);
+
+    this.handler = (event: IMessageEvent) => {
       const request = event.data;
 
       if (!Message.validate(request) || request.namespace !== namespace) {
@@ -32,8 +36,12 @@ export abstract class Receiver {
         );
       });
     };
-    window.addEventListener('message', handler);
 
+    window.addEventListener('message', this.handler);
+  }
+
+  protected destroy(): void {
+    window.removeEventListener('message', this.handler);
   }
 
   protected abstract processMessage(message: IMessage, sendMessage: sendMessage): void;
