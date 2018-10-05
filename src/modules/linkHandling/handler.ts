@@ -13,8 +13,19 @@ export class LinkHandler extends EventHandler {
     options: IAddEventListenerOptions,
     ): EventListener {
     return (event) => {
-      if (!event.target) return;
-      const anchor = <HTMLAnchorElement>event.target;
+      if (!event.hasOwnProperty('path')) return;
+      // tslint:disable-next-line:no-any
+      const path = (<any>event).path;
+
+      let i = 0;
+      const length = path.length;
+      let anchor: HTMLAnchorElement | null = null;
+      // tslint:disable-next-line:no-increment-decrement
+      for (i; i < length; i++) {
+        if (path[i].tagName === 'a') anchor = path[i];
+      }
+      if (!anchor) return;
+
       const href = anchor && anchor.href;
       if (!href)  return;
 
@@ -25,9 +36,6 @@ export class LinkHandler extends EventHandler {
         event.stopImmediatePropagation();
       }
 
-      // callback(marshalEvent(event, properties));
-
-      // TODO: Figure out how marshalEvents works, and maybe use that instead
       const newHref = { href: anchor.href };
       const obj = marshalObject(newHref);
       callback(obj);
