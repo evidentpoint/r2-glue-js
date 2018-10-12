@@ -1,13 +1,13 @@
 import { MessageCallback, MessageHandler, MessageResponders } from '../../lib';
-import { EventManager } from '../../lib/eventManager';
+import { EventManager } from './eventManager';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 import { marshalEvent } from '../../lib/marshaling';
 import { resolveEventTargetSelector } from '../../lib/util';
 
 export class EventHandler extends MessageHandler {
   public declarations: MessageResponders = {
-    [EventHandlingMessage.AddEventListener]: this.addEventListener,
-    [EventHandlingMessage.RemoveEventListener]: this.removeEventListener,
+    [EventHandlingMessage.AddEventListener]: this._addEventListener,
+    [EventHandlingMessage.RemoveEventListener]: this._removeEventListener,
   };
 
   private eventManager: EventManager = new EventManager();
@@ -32,7 +32,7 @@ export class EventHandler extends MessageHandler {
     };
   }
 
-  private async addEventListener(
+  private async _addEventListener(
     callback: MessageCallback,
     target: string,
     eventType: string,
@@ -45,7 +45,7 @@ export class EventHandler extends MessageHandler {
     return this.eventManager.addEventListener(eventType, handler, options, targets);
   }
 
-  private async removeEventListener({}: MessageCallback, listenerID: number): Promise<void> {
+  private async _removeEventListener({}: MessageCallback, listenerID: number): Promise<void> {
     this.eventManager.removeEventListener(listenerID);
   }
 }

@@ -1,3 +1,6 @@
+import { IAddEventListenerOptions } from './interface';
+import { MessageCallback } from '../../lib';
+
 interface IRegisteredHandler {
   eventType: any;
   callback: any;
@@ -19,15 +22,15 @@ export abstract class AbstractEventManager {
   }
 
   public addEventListener(
-    type: string,
-    callback: any,
-    options?: any,
+    eventType: string,
+    callback: MessageCallback,
+    options?: IAddEventListenerOptions,
   ): number {
     const id = this.generateEventID();
     this.registeredEventHandlers[id] = {
-      eventType: type,
-      callback: callback,
-      options: options,
+      eventType,
+      callback,
+      options,
     };
 
     return id;

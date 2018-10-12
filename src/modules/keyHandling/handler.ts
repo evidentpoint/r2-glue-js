@@ -1,4 +1,4 @@
-import { EventManager } from '../../lib/eventManager';
+import { EventManager } from '../eventHandling/eventManager';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
 import { marshalEvent } from '../../lib/marshaling';
 import {
@@ -26,8 +26,8 @@ const KEYBOARD_EVENT_PROPERTIES = [
 
 export class KeyHandler extends MessageHandler {
   public declarations: MessageResponders = {
-    [KeyHandlingMessage.AddKeyEventListener]: this.addEventListener,
-    [KeyHandlingMessage.RemoveKeyEventListener]: this.removeEventListener,
+    [KeyHandlingMessage.AddKeyEventListener]: this._addEventListener,
+    [KeyHandlingMessage.RemoveKeyEventListener]: this._removeEventListener,
   };
 
   private registeredKeyHandlers: { [key: number]: IRegisteredKeyHandler } = {};
@@ -37,13 +37,14 @@ export class KeyHandler extends MessageHandler {
 
   constructor() {
     super();
-    const keyboardEventHandler = this.createEventHandler();
-    this.eventManager.addEventListener('keydown', keyboardEventHandler, true);
-    this.eventManager.addEventListener('keypress', keyboardEventHandler, true);
-    this.eventManager.addEventListener('keyup', keyboardEventHandler, true);
+    const keyboardEventHandler = this._createEventHandler();
+    const options: IAddKeyListenerOptions = { useCapture: true };
+    this.eventManager.addEventListener('keydown', keyboardEventHandler, options);
+    this.eventManager.addEventListener('keypress', keyboardEventHandler, options);
+    this.eventManager.addEventListener('keyup', keyboardEventHandler, options);
   }
 
-  private createEventHandler(): Function {
+  private _createEventHandler(): MessageCallback {
     return (event: KeyboardEvent) => {
       if (event.defaultPrevented) {
         // Skip if event is already handled
@@ -66,7 +67,7 @@ export class KeyHandler extends MessageHandler {
     };
   }
 
-  private async addEventListener(
+  private async _addEventListener(
     callback: MessageCallback,
     target: string,
     eventType: KeyEventType,
@@ -86,7 +87,7 @@ export class KeyHandler extends MessageHandler {
     return this.lastUsedID;
   }
 
-  private async removeEventListener({}: MessageCallback, listenerID: number): Promise<void> {
+  private async _removeEventListener({}: MessageCallback, listenerID: number): Promise<void> {
     delete this.registeredKeyHandlers[listenerID];
 
     const obj = this.registeredKeyCodes;

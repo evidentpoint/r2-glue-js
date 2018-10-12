@@ -1,9 +1,8 @@
-import { MessageHandler, MessageResponders, MessageCallback } from '../../lib';
-import { EventManager } from '../../lib/eventManager';
-import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
-import { marshalEvent, marshalObject } from '../../lib/marshaling';
-import { resolveEventTargetSelector } from '../../lib/util';
+import { MessageCallback } from '../../lib';
+import { IAddEventListenerOptions } from '../eventHandling/interface';
+import { marshalObject } from '../../lib/marshaling';
 import { EventHandler } from '../eventHandling/handler';
+import { eventPath } from '../../lib/util';
 
 export class LinkHandler extends EventHandler {
 
@@ -13,9 +12,7 @@ export class LinkHandler extends EventHandler {
     options: IAddEventListenerOptions,
     ): EventListener {
     return (event) => {
-      if (!event.hasOwnProperty('path')) return;
-      // tslint:disable-next-line:no-any
-      const path = (<any>event).path;
+      const path =  eventPath(event);
 
       let i = 0;
       const length = path.length;

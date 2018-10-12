@@ -1,5 +1,5 @@
 import { Client } from '../../lib/client';
-import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
+import { EventHandlingMessage, IAddEventListenerOptions } from '../eventHandling/interface';
 
 export class LinkHandling extends Client {
   public constructor(targetWindow: Window) {

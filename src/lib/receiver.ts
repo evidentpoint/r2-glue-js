@@ -40,7 +40,7 @@ export abstract class Receiver {
     window.addEventListener('message', this.handler);
   }
 
-  protected destroy(): void {
+  public destroy(): void {
     window.removeEventListener('message', this.handler);
   }
 
