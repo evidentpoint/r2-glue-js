@@ -19,6 +19,7 @@ export class SelectionHandling extends Client {
       EventHandlingMessage.AddEventListener,
       [target, eventType, properties, options],
       (event) => {
+        event[1] = this;
         listener(event);
       },
     );
