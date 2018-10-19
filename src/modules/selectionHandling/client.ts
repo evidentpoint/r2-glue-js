@@ -2,6 +2,8 @@ import { Client } from '../../lib/client';
 import { EventHandlingMessage, IAddEventListenerOptions } from '../eventHandling/interface';
 
 export class SelectionHandling extends Client {
+  public typeName: string = 'SelectionHandling';
+
   public constructor(targetWindow: Window) {
     super('selection-handling', targetWindow);
   }
