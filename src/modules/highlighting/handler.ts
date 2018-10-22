@@ -21,8 +21,6 @@ export class Highlighter extends MessageHandler {
     const highlight = this._createHighlightDiv(clientRect);
     highlights.append(highlight);
 
-    callback();
-
     return 1;
   }
 

@@ -11,17 +11,12 @@ export class Highlighting extends Client {
 
   public async createHighlight(
     rangeData: RangeData,
-    listener?: EventListener,
     options?: IHighlightOptions,
   ): Promise<void> {
-    const cb = listener ? (event: any) => {
-      listener(event);
-    } : undefined;
 
     return this.sendMessage(
       EventHandlingMessage.CreateHighlight,
       [rangeData, options],
-      cb,
     );
   }
 }
