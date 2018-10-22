@@ -79,8 +79,22 @@ function createRange(
 ): Range {
   const range = new Range();
 
-  range.setStart(startContainer, startOffset);
-  range.setEnd(endContainer, endOffset);
+  const position = startContainer.compareDocumentPosition(endContainer);
+  let isBackwards = false;
+  if (position === 0) {
+    isBackwards = startOffset > endOffset;
+  }
+  if (position === startContainer.DOCUMENT_POSITION_PRECEDING) {
+    isBackwards = true;
+  }
+
+  const sc = isBackwards ? endContainer : startContainer;
+  const so = isBackwards ? endOffset : startOffset;
+  const ec = isBackwards ? startContainer : endContainer;
+  const eo = isBackwards ? startOffset : endOffset;
+
+  range.setStart(sc, so);
+  range.setEnd(ec, eo);
 
   return range;
 }
