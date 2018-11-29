@@ -10,7 +10,9 @@ export class RegionHandler extends EventHandler {
     options: IAddRegionListenerOptions,
     ): EventListener {
     return (event) => {
-      event.preventDefault();
+      if (options.stopPropagation) {
+        event.preventDefault();
+      }
 
       if (options.stopPropagation) {
         event.stopPropagation();
