@@ -1,9 +1,9 @@
 import { Client } from '../../lib/client';
-import { EventHandlingMessage } from '../eventHandling/interface';
-import { Region, IAddRegionListenerOptions } from './interface';
+import { Region, IAddRegionListenerOptions, RegionEventHandlingMessage } from './interface';
 
 export class RegionHandling extends Client {
   public typeName: string = 'RegionHandling';
+  public frameID: number;
 
   public constructor(targetWindow: Window) {
     super('region-handling', targetWindow);
@@ -16,7 +16,7 @@ export class RegionHandling extends Client {
     options: IAddRegionListenerOptions = {},
   ): Promise<number> {
     const properties: string[] = [];
-    const target = 'body';
+    const target = 'html';
 
     options.region = region;
     let type = eventType;
@@ -26,7 +26,7 @@ export class RegionHandling extends Client {
     }
 
     return this.sendMessage(
-      EventHandlingMessage.AddEventListener,
+      RegionEventHandlingMessage.AddEventListener,
       [target, type, properties, options],
       (event) => {
         listener(event);
@@ -34,7 +34,17 @@ export class RegionHandling extends Client {
     );
   }
 
+  public setOptions(
+    options: IAddRegionListenerOptions,
+    id?: number,
+    ): void {
+    this.sendMessage(
+      RegionEventHandlingMessage.SetOptions,
+      [options, id],
+    );
+  }
+
   public removeEventListener(listenerID: number): void {
-    this.sendMessage(EventHandlingMessage.RemoveEventListener, [listenerID]);
+    this.sendMessage(RegionEventHandlingMessage.RemoveEventListener, [listenerID]);
   }
 }

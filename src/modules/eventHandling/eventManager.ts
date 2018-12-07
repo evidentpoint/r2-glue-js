@@ -10,6 +10,7 @@ export class EventManager extends AbstractEventManager {
     callback: MessageCallback,
     options?: IAddEventListenerOptions,
     resolvedTargets?: EventTarget[],
+    customId?: number,
   ): number {
     let resolved = resolvedTargets;
     if (!(resolved && resolved.length)) resolved = [window];
@@ -22,7 +23,7 @@ export class EventManager extends AbstractEventManager {
       };
     });
 
-    const id = super.addEventListener(type, callback, options);
+    const id = super.addEventListener(type, callback, options, undefined, customId);
     this.registeredEventRemovers[id] = listenerRemovers;
 
     return id;
