@@ -1,5 +1,10 @@
 import { MessageCallback, MessageResponders, MessageHandler } from '../../lib';
-import { IAddRegionListenerOptions, RegionScope, RegionEventHandlingMessage, Region, RegionOffset } from './interface';
+import {
+  IAddRegionListenerOptions,
+  RegionScope,
+  RegionEventHandlingMessage,
+  Region,
+} from './interface';
 import { marshalObject } from '../../lib/marshaling';
 import { IAddEventListenerOptions } from '../eventHandling/interface';
 import { resolveEventTargetSelector } from '../../lib/util';
@@ -18,7 +23,7 @@ export class RegionHandler extends MessageHandler {
   public declarations: MessageResponders = {
     [RegionEventHandlingMessage.AddEventListener]: this._addEventListener,
     [RegionEventHandlingMessage.RemoveEventListener]: this._removeEventListener,
-    [RegionEventHandlingMessage.SetOptions]: this._setOptionsAsync,
+    [RegionEventHandlingMessage.SetRegion]: this._setRegionAsync,
   };
 
   private eventManager: EventManager = new EventManager();
@@ -61,10 +66,6 @@ export class RegionHandler extends MessageHandler {
         x = event.pageX;
         y = event.pageY;
       }
-      if (options.offset) {
-        x += options.offset.x || 0;
-        y += options.offset.y || 0;
-      }
 
       options.wasWithinRegion = options.withinRegion;
       options.withinRegion =
@@ -85,18 +86,21 @@ export class RegionHandler extends MessageHandler {
     };
   }
 
-  private async _setOptionsAsync(
+  private async _setRegionAsync(
     callback: MessageCallback,
-    options: IAddRegionListenerOptions,
+    region: Region,
     id?: number,
   ): Promise<void> {
-    this._setOptions(options, id);
+    this._setRegion(region, id);
   }
 
-  private _setOptions(
-    options: IAddRegionListenerOptions,
+  private _setRegion(
+    region: Region,
     id?: number,
   ): void {
+    const options = {
+      region,
+    };
     if (id) {
       this._setOptionsById(options, id);
     } else {
@@ -111,12 +115,11 @@ export class RegionHandler extends MessageHandler {
     const handler = this.eventManager.getEventHandler(id);
     if (options.region) {
       handler.options.region = this._newRegion(options.region, handler.options.region);
+      // For debugging only
+      // this._makevisualdebug(id, options.region);
     }
     if (options.withinRegion) {
       handler.options.withinRegion = options.withinRegion;
-    }
-    if (options.offset) {
-      handler.options.offset = this._newOffset(options.offset, handler.options.offset);
     }
   }
 
@@ -131,18 +134,6 @@ export class RegionHandler extends MessageHandler {
       width: (newRegion && newRegion.width) || oldRegion.width,
       height: (newRegion && newRegion.height) || oldRegion.height,
       scope: (newRegion && newRegion.scope) || oldRegion.scope,
-    };
-  }
-
-  private _newOffset(
-    newOffset: RegionOffset | undefined,
-    oldOffset: RegionOffset | undefined,
-  ): RegionOffset {
-    const offset = oldOffset || { x: 0, y:0 };
-
-    return {
-      x: (newOffset && newOffset.x) || offset.x,
-      y: (newOffset && newOffset.y) || offset.y,
     };
   }
 
@@ -183,10 +174,33 @@ export class RegionHandler extends MessageHandler {
     const newId = this.eventManager.generateEventID();
     const handler: EventListener = this.createHandler(callback, properties, options, newId);
 
+    // For debugging only
+    // this._makevisualdebug(newId, options.region);
+
     return this.eventManager.addEventListener(eventType, handler, options, targets, newId);
   }
 
   private async _removeEventListener({}: MessageCallback, listenerID: number): Promise<void> {
     this.eventManager.removeEventListener(listenerID);
+  }
+
+  // For debugging only
+  // Visualizes the region on screen
+  private _makevisualdebug(id: number, region: any): void {
+    const delid = `debug-region-${id}`;
+    let el = document.getElementById(delid);
+    if (!el) {
+      el = document.createElement('div');
+      el.setAttribute('id', delid);
+      el.style.setProperty('background', 'rgba(200, 200, 200, 0.3)');
+      el.style.setProperty('border', '1px solid black');
+      el.style.setProperty('position', 'absolute');
+      document.body.append(el);
+    }
+
+    el.style.setProperty('left', `${region.left}px`);
+    el.style.setProperty('top', `${region.top}px`);
+    el.style.setProperty('width', `${region.width}px`);
+    el.style.setProperty('height', `${region.height}px`);
   }
 }

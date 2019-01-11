@@ -34,13 +34,13 @@ export class RegionHandling extends Client {
     );
   }
 
-  public setOptions(
-    options: IAddRegionListenerOptions,
+  public setRegion(
+    region: Region,
     id?: number,
     ): void {
     this.sendMessage(
-      RegionEventHandlingMessage.SetOptions,
-      [options, id],
+      RegionEventHandlingMessage.SetRegion,
+      [region, id],
     );
   }
 

@@ -1,4 +1,4 @@
-import { IAddEventListenerOptions, EventHandlingMessage } from '../eventHandling/interface';
+import { IAddEventListenerOptions } from '../eventHandling/interface';
 
 export enum RegionScope {
   Viewport = 'viewport',
@@ -13,21 +13,15 @@ export type Region = {
   scope?: RegionScope,
 };
 
-export interface RegionOffset {
-  x?: number;
-  y?: number;
-}
-
 export interface IAddRegionListenerOptions extends IAddEventListenerOptions {
   region?: Region;
   eventType?: string;
   wasWithinRegion?: boolean;
   withinRegion?: boolean;
-  offset?: RegionOffset;
 }
 
 export enum RegionEventHandlingMessage {
   AddEventListener = 'ADD_EVENT_LISTENER',
   RemoveEventListener = 'REMOVE_EVENT_LISTENER',
-  SetOptions = 'SET_OPTIONS',
+  SetRegion = 'SET_REGION',
 }
