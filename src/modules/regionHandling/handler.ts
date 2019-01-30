@@ -127,14 +127,16 @@ export class RegionHandler extends MessageHandler {
     newRegion: Region | undefined,
     oldRegion: Region,
   ): Region | undefined {
+    const region = oldRegion;
+    if (newRegion) {
+      region.left = newRegion.left !== undefined ? newRegion.left : oldRegion.left;
+      region.top = newRegion.top !== undefined ? newRegion.top : oldRegion.top;
+      region.width = newRegion.width !== undefined ? newRegion.width : oldRegion.width;
+      region.height = newRegion.height !== undefined ? newRegion.height : oldRegion.height;
+      region.scope = newRegion.scope !== undefined ? newRegion.scope : oldRegion.scope;
+    }
 
-    return {
-      left: (newRegion && newRegion.left) || oldRegion.left,
-      top: (newRegion && newRegion.top) || oldRegion.top,
-      width: (newRegion && newRegion.width) || oldRegion.width,
-      height: (newRegion && newRegion.height) || oldRegion.height,
-      scope: (newRegion && newRegion.scope) || oldRegion.scope,
-    };
+    return region;
   }
 
   private _setOptionsForAll(
