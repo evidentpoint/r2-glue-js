@@ -35,6 +35,9 @@ export function generateEventTargetSelector(eventTarget: EventTarget): string | 
   if (eventTarget === document) {
     return '@document';
   }
+  if (eventTarget instanceof Text) {
+    return getTextSelector(eventTarget);
+  }
   if (eventTarget instanceof Element) {
     // Generate a CSS selector for the Element
     return finder(eventTarget);
@@ -99,5 +102,31 @@ export function eventPath(evt: any): any[] {
   return [target]
       .concat(getParents(target))
       .concat([window]);
+}
+
+function getTextSelector(text: Text): string {
+  const parent = text.parentElement;
+  let selector = '@text';
+  if (!parent) {
+    return selector;
+  }
+  const children = parent.childNodes;
+  let textIndex = 0;
+  for (let i=0; i<children.length; i++) {
+    const child = children.item(i);
+
+    if (child instanceof Text) {
+      if (child === text) {
+        break;
+      }
+      textIndex += 1;
+    }
+  }
+
+  if (textIndex > 0) {
+    selector += `:nth-child(${textIndex})`
+  }
+
+  return selector;
 }
 // tslint:enable

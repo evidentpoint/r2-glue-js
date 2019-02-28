@@ -4,3 +4,4 @@ export * from './modules/linkHandling/client';
 export * from './modules/selectionHandling/client';
 export * from './modules/highlighting/client';
 export * from './modules/regionHandling/client';
+export * from './modules/generateCFI/client';
