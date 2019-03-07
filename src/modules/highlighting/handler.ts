@@ -59,18 +59,24 @@ export class Highlighter extends MessageHandler {
       return -1;
     }
 
-    // Get the child div that's responsible for visibly showing a highlight
-    const div = el.getElementsByTagName('div')[0];
+    // Get the child divs that are responsible for visibly showing the highlights
+    const divs = el.getElementsByTagName('div');
     let timeout = 0;
     if (options && options.fadeOut) {
-      div.style.setProperty('opacity', '1');
-      div.style.setProperty('transition', `opacity ${options.fadeOut}ms ease 0s`);
+      for (let i = 0; i < divs.length; i += 1) {
+        const child = divs.item(i)!;
+        child.style.setProperty('opacity', '1');
+        child.style.setProperty('transition', `opacity ${options.fadeOut}ms ease 0s`);
+      }
       timeout = options.fadeOut || 0;
     }
 
     if (timeout) {
-      div.style.setProperty('opacity', '0');
-      div.addEventListener('transitionend', () => {
+      for (let i = 0; i < divs.length; i += 1) {
+        const child = divs.item(i)!;
+        child.style.setProperty('opacity', '0');
+      }
+      divs[0].addEventListener('transitionend', () => {
         el.remove();
       });
     } else {
