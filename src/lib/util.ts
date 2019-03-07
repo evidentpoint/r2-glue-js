@@ -35,10 +35,11 @@ export function generateEventTargetSelector(eventTarget: EventTarget): string | 
   if (eventTarget === document) {
     return '@document';
   }
-  if (eventTarget instanceof Text) {
-    return getTextSelector(eventTarget);
+  const node = eventTarget as Node;
+  if (node.nodeType === Node.TEXT_NODE) {
+    return getTextSelector(node as Text);
   }
-  if (eventTarget instanceof Element) {
+  if (node.nodeType === Node.ELEMENT_NODE) {
     // Generate a CSS selector for the Element
     return finder(eventTarget);
   }
@@ -115,7 +116,7 @@ function getTextSelector(text: Text): string {
   for (let i=0; i<children.length; i++) {
     const child = children.item(i);
 
-    if (child instanceof Text) {
+    if (child.nodeType === Node.TEXT_NODE) {
       if (child === text) {
         break;
       }

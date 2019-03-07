@@ -68,7 +68,7 @@ export function createSelectorFromStringArray(array: string[]): string {
   return selector;
 }
 
-function createRange(
+export function createRange(
   startContainer: Node,
   startOffset: number,
   endContainer: Node,

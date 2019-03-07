@@ -1,5 +1,5 @@
 import { Client } from '../../lib/client';
-import { EventHandlingMessage, IHighlightOptions } from './interface';
+import { EventHandlingMessage, IHighlightOptions, IHighlightDeletionOptions } from './interface';
 import { RangeData } from '../utilities/rangeData';
 
 export class Highlighting extends Client {
@@ -10,23 +10,24 @@ export class Highlighting extends Client {
   }
 
   public async createHighlight(
-    rangeData: RangeData,
+    rangeDataOrCFI: RangeData | string,
     options?: IHighlightOptions,
   ): Promise<void> {
 
     return this.sendMessage(
       EventHandlingMessage.CreateHighlight,
-      [rangeData, options],
+      [rangeDataOrCFI, options],
     );
   }
 
   public async deleteHighlight(
-    rangeData: RangeData,
+    rangeDataOrCFI: RangeData | string,
+    options?: IHighlightDeletionOptions,
   ): Promise<void> {
 
     return this.sendMessage(
       EventHandlingMessage.DeleteHighlight,
-      [rangeData],
+      [rangeDataOrCFI, options],
     );
   }
 }
