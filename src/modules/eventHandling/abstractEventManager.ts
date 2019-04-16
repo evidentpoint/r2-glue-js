@@ -9,7 +9,7 @@ interface IRegisteredHandler {
 
 export abstract class AbstractEventManager {
   private lastEventID: number = 0;
-  private registeredEventHandlers: { [id: number]: IRegisteredHandler } = {};
+  public registeredEventHandlers: { [id: number]: IRegisteredHandler } = {};
 
   public getEventHandler(
     eventID: number,
@@ -25,8 +25,10 @@ export abstract class AbstractEventManager {
     eventType: string,
     callback: MessageCallback,
     options?: IAddEventListenerOptions,
+    resolvedTargets?: EventTarget[],
+    customId?: number,
   ): number {
-    const id = this.generateEventID();
+    const id = customId || this.generateEventID();
     this.registeredEventHandlers[id] = {
       eventType,
       callback,

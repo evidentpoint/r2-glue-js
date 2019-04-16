@@ -1,20 +1,13 @@
 export interface RangeData {
-    startOffset: number;
-    startContainer: any[];
-    endOffset: number;
-    endContainer: any[];
+  startOffset: number;
+  startContainer: any[];
+  endOffset: number;
+  endContainer: any[];
 }
 
 export function createRangeData(range: Range): RangeData {
-  // Ensure we don't use the Text node, so that it can be properly stringified later on
-  const startContainer = range.startContainer instanceof Text ?
-    range.startContainer.parentElement : range.startContainer;
-
-  const endContainer = range.endContainer instanceof Text ?
-    range.endContainer.parentElement : range.endContainer;
-
-  const startContainerPath = getElementPath(startContainer);
-  const endContainerPath = getElementPath(endContainer);
+  const startContainerPath = getElementPath(range.startContainer);
+  const endContainerPath = getElementPath(range.endContainer);
 
   const rangeData: RangeData = {
     startOffset: range.startOffset,
@@ -24,13 +17,6 @@ export function createRangeData(range: Range): RangeData {
   };
 
   return rangeData;
-}
-
-export function createRangeFromSelection(selection: Selection): Range {
-  return createRange(
-    selection.anchorNode, selection.anchorOffset,
-    selection.focusNode, selection.focusOffset,
-  );
 }
 
 export function createRangeFromRangeData(rangeData: RangeData): Range {
@@ -45,9 +31,17 @@ export function createRangeFromRangeData(rangeData: RangeData): Range {
 
     return new Range();
   }
+  const firstStart = rangeData.startContainer[0];
+  if (firstStart.includes('@text')) {
+    const index = getTextNodeSelectorIndex(firstStart);
+    startContainer = getTextNode(startContainer, index);
+  }
 
-  startContainer = getTextNode(startContainer);
-  endContainer = getTextNode(endContainer);
+  const firstEnd = rangeData.endContainer[0];
+  if (firstEnd.includes('@text')) {
+    const index = getTextNodeSelectorIndex(firstEnd);
+    endContainer = getTextNode(endContainer, index);
+  }
 
   return createRange(
     startContainer, rangeData.startOffset,
@@ -74,7 +68,7 @@ export function createSelectorFromStringArray(array: string[]): string {
   return selector;
 }
 
-function createRange(
+export function createRange(
   startContainer: Node,
   startOffset: number,
   endContainer: Node,
@@ -102,16 +96,31 @@ function createRange(
   return range;
 }
 
-function getTextNode(element: Element | Node): Node | undefined {
+function getTextNodeSelectorIndex(selector: string): number {
+  let index = 0;
+  if (selector.includes('@text:nth-child')) {
+    const match = selector.match(/@text:nth-child\((\d*)\)/);
+    if (match && match[1]) {
+      index = Number.parseInt(match[1], 10) || 0;
+    }
+  }
+
+  return index;
+}
+
+function getTextNode(element: HTMLElement, index: number = 0): Text | undefined {
   const nodes: NodeListOf<ChildNode> = element.childNodes;
 
-  let node: Node;
-  let textNode: Node | undefined = undefined;
+  let textNode: Text | undefined;
+  let textNodeIndex = 0;
   for (let i = 0; i < nodes.length; i += 1) {
-    node = nodes[i];
+    const node: Node = nodes[i];
     if (node.nodeType === Node.TEXT_NODE) {
-      textNode = node;
-      break;
+      if (textNodeIndex === index) {
+        textNode = <Text> node;
+        break;
+      }
+      textNodeIndex += 1;
     }
   }
 
