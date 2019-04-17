@@ -5,7 +5,7 @@ import { CFIEventHandlingMessage } from './interface';
 import {
   RangeData,
   createRangeFromRangeData,
-} from '../utilities/rangeData';
+} from '../utilities/range';
 
 export class GenerateCFIHandler extends MessageHandler {
   public declarations: MessageResponders = {

@@ -1,6 +1,6 @@
 import { MessageCallback } from '../../lib';
 import { IAddEventListenerOptions } from '../eventHandling/interface';
-import { RangeData, createRangeData } from '../utilities/rangeData';
+import { RangeData, createRangeData } from '../utilities/range';
 import { marshalObject } from '../../lib/marshaling';
 import { EventHandler } from '../eventHandling/handler';
 

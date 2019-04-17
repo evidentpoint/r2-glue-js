@@ -1,12 +1,14 @@
 import { MessageCallback, MessageHandler, MessageResponders } from '../../lib';
-import * as EPUBcfi from 'readium-cfi-js';
 import { EventHandlingMessage, IHighlightOptions, IHighlightDeletionOptions } from './interface';
 import {
   RangeData,
   createRangeFromRangeData,
+  getRangeFromCFI,
+} from '../utilities/range';
+
+import {
   createSelectorFromStringArray,
-  createRange,
-} from '../utilities/rangeData';
+} from '../utilities/helpers';
 
 export class Highlighter extends MessageHandler {
   public declarations: MessageResponders = {
@@ -23,7 +25,7 @@ export class Highlighter extends MessageHandler {
 
     let range;
     if (typeof(rangeData) === 'string') {
-      range = this._getRangeFromCFI(cfi);
+      range = getRangeFromCFI(cfi);
     } else {
       range = createRangeFromRangeData(rangeData);
     }
@@ -145,58 +147,5 @@ export class Highlighter extends MessageHandler {
     highlight.style.setProperty('opacity', '1');
 
     return highlight;
-  }
-
-  private _getRangeFromCFI(cfi: string): Range | null {
-    let range;
-    // Highlight ranage
-    if (EPUBcfi.Interpreter.isRangeCfi(cfi)) {
-      const target = EPUBcfi.Interpreter.getRangeTargetElements(cfi, document);
-      range = createRange(
-        target.startElement,
-        target.startOffset || 0,
-        target.endElement,
-        target.endOffset || 0,
-      );
-    // Highlight next word of cfi
-    } else {
-      const target = EPUBcfi.Interpreter.getTargetElement(cfi, document);
-      const sentence = target[0].wholeText;
-      // Get offset
-      const match = cfi.match(/:(\d*)/);
-      const targetOffset = match ? Number.parseInt(match[1], 10) : 0;
-      let startOffset = targetOffset === 0 ? 0 : -1;
-      let endOffset = -1;
-
-      // Find first word after offset
-      let charGroup = '';
-      let finishWord = false;
-      for (let i = 0; i < sentence.length; i += 1) {
-        const char = sentence[i];
-        if (i > targetOffset) {
-          finishWord = true;
-        }
-
-        if (char === ' ') {
-          if (finishWord && charGroup.length !== 0) {
-            startOffset = i - charGroup.length;
-            endOffset = i;
-            break;
-          }
-          charGroup = '';
-        } else {
-          charGroup += char;
-        }
-      }
-
-      range = createRange(
-        target[0],
-        startOffset,
-        target[0],
-        endOffset,
-      );
-    }
-
-    return range || null;
   }
 }

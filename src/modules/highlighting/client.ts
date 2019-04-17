@@ -1,6 +1,6 @@
 import { Client } from '../../lib/client';
 import { EventHandlingMessage, IHighlightOptions, IHighlightDeletionOptions } from './interface';
-import { RangeData } from '../utilities/rangeData';
+import { RangeData } from '../utilities/range';
 
 export class Highlighting extends Client {
   public typeName: string = 'Highlighting';
